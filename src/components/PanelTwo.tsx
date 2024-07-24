@@ -41,19 +41,21 @@ function PanelTwo() {
   };
 
   const handleSave = () => {
-    const existingData: ProfileData[] = JSON.parse(
-      localStorage.getItem("profileData") || "[]"
-    );
-    const newItem: ProfileData = { imageSrc, firstName, lastName, email };
-    const isDuplicate = existingData.some(
-      (item: ProfileData) =>
-        item.firstName === newItem.firstName &&
-        item.lastName === newItem.lastName &&
-        item.email === newItem.email
-    );
-    if (!isDuplicate) {
-      const updatedData = [...existingData, newItem];
-      localStorage.setItem("profileData", JSON.stringify(updatedData));
+    if (typeof window !== "undefined") {
+      const existingData: ProfileData[] = JSON.parse(
+        localStorage.getItem("profileData") || "[]"
+      );
+      const newItem: ProfileData = { imageSrc, firstName, lastName, email };
+      const isDuplicate = existingData.some(
+        (item: ProfileData) =>
+          item.firstName === newItem.firstName &&
+          item.lastName === newItem.lastName &&
+          item.email === newItem.email
+      );
+      if (!isDuplicate) {
+        const updatedData = [...existingData, newItem];
+        localStorage.setItem("profileData", JSON.stringify(updatedData));
+      }
     }
   };
 

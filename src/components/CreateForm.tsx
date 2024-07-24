@@ -54,26 +54,34 @@ const CreateForm = forwardRef<FormRef, CreateFormProps>((props, ref) => {
   };
 
   useEffect(() => {
-    const links: LinkData[] = JSON.parse(localStorage.getItem("links") || "[]");
-    if (links.length > 0) {
-      const lastLink = links[links.length - 1];
-      setSelectedMenu(lastLink.selectedMenu);
-      setInputValue(lastLink.inputValue);
+    if (typeof window !== "undefined") {
+      const links: LinkData[] = JSON.parse(
+        localStorage.getItem("links") || "[]"
+      );
+      if (links.length > 0) {
+        const lastLink = links[links.length - 1];
+        setSelectedMenu(lastLink.selectedMenu);
+        setInputValue(lastLink.inputValue);
+      }
     }
   }, []);
 
   const submit = () => {
-    const links: LinkData[] = JSON.parse(localStorage.getItem("links") || "[]");
-    const newItem: LinkData = { selectedMenu, inputValue };
-    const isDuplicate = links.some(
-      (item: LinkData) =>
-        JSON.stringify(item.selectedMenu) ===
-          JSON.stringify(newItem.selectedMenu) &&
-        item.inputValue === newItem.inputValue
-    );
-    if (!isDuplicate) {
-      links.push(newItem);
-      localStorage.setItem("links", JSON.stringify(links));
+    if (typeof window !== "undefined") {
+      const links: LinkData[] = JSON.parse(
+        localStorage.getItem("links") || "[]"
+      );
+      const newItem: LinkData = { selectedMenu, inputValue };
+      const isDuplicate = links.some(
+        (item: LinkData) =>
+          JSON.stringify(item.selectedMenu) ===
+            JSON.stringify(newItem.selectedMenu) &&
+          item.inputValue === newItem.inputValue
+      );
+      if (!isDuplicate) {
+        links.push(newItem);
+        localStorage.setItem("links", JSON.stringify(links));
+      }
     }
   };
 

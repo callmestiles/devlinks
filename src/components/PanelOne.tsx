@@ -16,23 +16,6 @@ interface FormRef {
 }
 
 function PanelOne() {
-  //   const [formRefs, setFormRefs] = useState<React.RefObject<FormRef>[]>([
-  //     React.createRef()
-  //   ]);
-
-  //   const addForm = () => {
-  //     setFormRefs([...formRefs, React.createRef()]);
-  //   };
-
-  //   const removeForm = (index: number) => {
-  //     const newFormRefs = [...formRefs];
-  //     newFormRefs.splice(index, 1);
-  //     setFormRefs(newFormRefs);
-  //     const links = JSON.parse(localStorage.getItem("links") || "[]");
-  //     links.splice(index, 1);
-  //     localStorage.setItem("links", JSON.stringify(links));
-  //   };
-
   const initialFormCount = Number(localStorage.getItem("formCount") || 1);
   const initialFormRefs: RefObject<FormRef>[] = Array.from(
     { length: initialFormCount },
@@ -43,7 +26,9 @@ function PanelOne() {
     useState<RefObject<FormRef>[]>(initialFormRefs);
 
   useEffect(() => {
-    localStorage.setItem("formCount", formRefs.length.toString());
+    if (typeof window !== "undefined") {
+      localStorage.setItem("formCount", formRefs.length.toString());
+    }
   }, [formRefs.length]);
 
   const addForm = () => {
@@ -59,19 +44,10 @@ function PanelOne() {
       newFormRefs.splice(index, 1);
       return newFormRefs;
     });
-    localStorage.removeItem(`link${index}`);
+    const links = JSON.parse(localStorage.getItem("links") || "[]");
+    links.splice(index, 1);
+    localStorage.setItem("links", JSON.stringify(links));
   };
-
-  //   const removeForm = (index: number) => {
-  //     setFormRefs((prevFormRefs) => {
-  //       const newFormRefs = [...prevFormRefs];
-  //       newFormRefs.splice(index, 1);
-  //       return newFormRefs;
-  //     });
-  //     const links = JSON.parse(localStorage.getItem("links") || "[]");
-  //     links.splice(index, 1);
-  //     localStorage.setItem("links", JSON.stringify(links));
-  //   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
