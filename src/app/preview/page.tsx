@@ -37,7 +37,7 @@ function Preview() {
       >
         {" "}
       </Box>
-      <Container maxW="100%" display="flex" flexDir="column" maxH={["100vh"]}>
+      <Container maxW="100%" display="flex" flexDir="column" minH={["100vh"]}>
         <Flex mt="1rem" p={["0", ".6rem"]} bg="white" borderRadius=".6rem">
           <Button
             size="sm"
