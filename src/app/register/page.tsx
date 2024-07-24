@@ -17,8 +17,10 @@ import {
   FormControl,
   FormHelperText,
   Text,
-  FormErrorMessage
+  FormErrorMessage,
+  Link
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email format").required("Can't be empty"),
@@ -39,6 +41,8 @@ type LoginFormInputs = {
 };
 
 function Register() {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -48,8 +52,8 @@ function Register() {
   });
 
   const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
-    console.log(data);
-    // Handle login logic here
+    // console.log(data);
+    router.push("/");
   };
 
   return (
@@ -138,9 +142,11 @@ function Register() {
           <Text fontSize=".8rem" color="grey" mr={["0", ".5rem"]}>
             Already have an account?
           </Text>
-          <Text fontSize=".8rem" color="brand.500">
-            Login
-          </Text>
+          <Link href="/login">
+            <Text fontSize=".8rem" color="brand.500">
+              Login
+            </Text>
+          </Link>
         </Flex>
       </Box>
     </Container>

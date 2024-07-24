@@ -5,6 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import FormButtonComponent from "@/components/FormButtonComponent";
 import InputGroupComponent from "@/components/InputGroup";
+import { useRouter } from "next/navigation";
 import {
   Container,
   Flex,
@@ -15,15 +16,13 @@ import {
   VStack,
   FormControl,
   Text,
-  FormErrorMessage
+  FormErrorMessage,
+  Link
 } from "@chakra-ui/react";
 
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email format").required("Can't be empty"),
-  password: yup
-    .string()
-    // .min(6, "Please check again")
-    .required("Please check again")
+  password: yup.string().required("Please check again")
 });
 
 type LoginFormInputs = {
@@ -32,6 +31,8 @@ type LoginFormInputs = {
 };
 
 function Login() {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -41,8 +42,8 @@ function Login() {
   });
 
   const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
-    console.log(data);
-    // Handle login logic here
+    // console.log(data);
+    router.push("/");
   };
 
   return (
@@ -82,6 +83,7 @@ function Login() {
           <FormControl isRequired isInvalid={!!errors.email}>
             <FormLabel fontSize={[".7rem", ".8rem"]}>Email address</FormLabel>
             <InputGroupComponent
+              inputtype="email"
               src="/images/icon-mail.svg"
               placeholder="e.g. alex@email.com"
               {...register("email")}
@@ -93,6 +95,7 @@ function Login() {
           <FormControl isRequired isInvalid={!!errors.password}>
             <FormLabel fontSize={[".7rem", ".8rem"]}>Password</FormLabel>
             <InputGroupComponent
+              inputtype="password"
               src="/images/icon-lock.svg"
               placeholder="Enter your password"
               {...register("password")}
@@ -112,9 +115,11 @@ function Login() {
           <Text fontSize=".8rem" color="grey" mr={["0", ".5rem"]}>
             Don’t have an account?
           </Text>
-          <Text fontSize=".8rem" color="brand.500">
-            Create account
-          </Text>
+          <Link href="/register">
+            <Text fontSize=".8rem" color="brand.500">
+              Create account
+            </Text>
+          </Link>
         </Flex>
       </Box>
     </Container>

@@ -7,15 +7,43 @@ import {
   Image,
   Heading,
   Text,
+  Link,
   Box,
-  VStack
+  VStack,
+  Avatar
 } from "@chakra-ui/react";
 import React from "react";
 import { css } from "@emotion/react";
 
+interface Menu {
+  src: string;
+  alt: string;
+  text: string;
+}
+
+interface LinkData {
+  selectedMenu: Menu | null;
+  inputValue: string;
+}
+
+interface ProfileData {
+  imageSrc: string | null;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
 function Preview() {
+  const profileItem = localStorage.getItem("profileData");
+  const profile: ProfileData[] | null = profileItem
+    ? JSON.parse(profileItem)
+    : null;
+
+  const linkItem = localStorage.getItem("links");
+  const links: LinkData[] | null = linkItem ? JSON.parse(linkItem) : null;
   return (
     <>
+      {console.log(links)}
       <Box
         display={["none", "block"]}
         css={css`
@@ -39,15 +67,17 @@ function Preview() {
       </Box>
       <Container maxW="100%" display="flex" flexDir="column" minH={["100vh"]}>
         <Flex mt="1rem" p={["0", ".6rem"]} bg="white" borderRadius=".6rem">
-          <Button
-            size="sm"
-            bg="white"
-            border="1px"
-            borderColor="brand.500"
-            color="brand.500"
-          >
-            Back to Editor
-          </Button>
+          <Link href="/">
+            <Button
+              size="sm"
+              bg="white"
+              border="1px"
+              borderColor="brand.500"
+              color="brand.500"
+            >
+              Back to Editor
+            </Button>
+          </Link>
           <Spacer />
           <Button size="sm" bg="brand.500" color="white">
             Share Link
@@ -58,56 +88,55 @@ function Preview() {
           <Flex
             flexDir="column"
             align="center"
-            width={["80%", "18rem"]}
-            p={["0", "1.5rem"]}
+            width={["80%", "20rem"]}
+            p={["0", "3rem"]}
             borderRadius={["0", ".8rem"]}
             bg="white"
+            boxShadow="lg"
           >
-            <Image
+            <Avatar
               src="/images/icon-avatar-2.svg"
-              alt="Profile picture"
-              blockSize="6rem"
+              name="Profile picture"
+              size="xl"
               mb="1rem"
             />
-            <Heading fontSize="1.5rem" mb=".2rem">
-              Ben Wright
-            </Heading>
-            <Text fontSize=".8rem" color="grey" mb="2.5rem">
-              ben@example.com
-            </Text>
+            {profile && profile.length > 0 && (
+              <>
+                <Heading fontSize="1.5rem" mb=".2rem">
+                  {profile[0].firstName} {profile[0].lastName}
+                </Heading>
+                <Text fontSize=".8rem" color="grey" mb="2.5rem">
+                  {profile[0].email}
+                </Text>
+              </>
+            )}
             <VStack width="100%" spacing="1rem">
-              <Flex
-                width="100%"
-                align="center"
-                bg="black"
-                p=".5rem"
-                borderRadius=".5rem"
-              >
-                <Image
-                  src="/images/icon-github.svg"
-                  alt="Icon-github"
-                  mr=".5rem"
-                />
-                <Text color="white">Github</Text>
-                <Spacer />
-                <Image src="/images/icon-arrow-right.svg" alt="icon-right" />
-              </Flex>
-              <Flex
-                width="100%"
-                align="center"
-                bg="black"
-                p=".5rem"
-                borderRadius=".5rem"
-              >
-                <Image
-                  src="/images/icon-github.svg"
-                  alt="Icon-github"
-                  mr=".5rem"
-                />
-                <Text color="white">Github</Text>
-                <Spacer />
-                <Image src="/images/icon-arrow-right.svg" alt="icon-right" />
-              </Flex>
+              {links &&
+                links.map(
+                  (link, index) =>
+                    link.selectedMenu && (
+                      <Flex
+                        key={index}
+                        width="100%"
+                        align="center"
+                        bg="black"
+                        p=".5rem"
+                        borderRadius=".5rem"
+                      >
+                        <Image
+                          src={link.selectedMenu.src}
+                          alt={link.selectedMenu.alt}
+                          mr=".5rem"
+                        />
+                        <Text color="white">{link.selectedMenu.text}</Text>
+                        <Spacer />
+                        <Image
+                          src="/images/icon-arrow-right.svg"
+                          alt="icon-right"
+                        />
+                      </Flex>
+                    )
+                )}
             </VStack>
           </Flex>
         </Flex>

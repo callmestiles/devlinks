@@ -21,7 +21,7 @@ const InputGroupComponent = forwardRef<HTMLInputElement, Props>(
         <InputLeftElement>
           <Image src={src} alt="icon" boxSize={4} />
         </InputLeftElement>
-        <Box boxShadow="xl" width="100%">
+        <Box boxShadow="lg" width="100%">
           <Input
             ref={ref}
             type={inputtype}
