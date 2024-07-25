@@ -1,5 +1,7 @@
 "use client";
+
 import React, { useState, useEffect, RefObject } from "react";
+
 import {
   Flex,
   Text,
@@ -9,9 +11,11 @@ import {
   VStack,
   Spacer
 } from "@chakra-ui/react";
+
 import CreateForm from "./CreateForm";
 import { ref as dbRef, set, get, child, remove } from "firebase/database";
 import { db } from "../../utils/firebase";
+import EmptyList from "./EmptyList";
 
 interface FormRef {
   submit: () => void;
@@ -39,6 +43,7 @@ function PanelOne() {
     fetchData();
   }, []);
 
+  console.log(`formCount: ${formCount}`);
   const addForm = () => {
     const newFormCount = formCount + 1;
     setFormCount(newFormCount);
@@ -113,56 +118,61 @@ function PanelOne() {
           + Add new link
         </Button>
       </Box>
-
-      <VStack mt="1.5rem" p=".8rem" spacing="2rem">
-        {formRefs.map((formRef, index) => (
-          <Box bg="#FAFAFA" width="100%" p="1.5rem" key={index}>
-            <Box>
-              <Flex align="center">
-                <Box mr=".5rem">
-                  <Image
-                    src="/images/icon-rectangle.svg"
-                    alt="rectangle"
-                    mb=".2rem"
-                  />
-                  <Image src="/images/icon-rectangle.svg" alt="rectangle" />
+      {formCount === 0 ? (
+        <EmptyList />
+      ) : (
+        <>
+          <VStack mt="1.5rem" p=".8rem" spacing="2rem">
+            {formRefs.map((formRef, index) => (
+              <Box bg="#FAFAFA" width="100%" p="1.5rem" key={index}>
+                <Box>
+                  <Flex align="center">
+                    <Box mr=".5rem">
+                      <Image
+                        src="/images/icon-rectangle.svg"
+                        alt="rectangle"
+                        mb=".2rem"
+                      />
+                      <Image src="/images/icon-rectangle.svg" alt="rectangle" />
+                    </Box>
+                    <Text color="grey" fontWeight="700">
+                      Link #{index + 1}
+                    </Text>
+                    <Spacer />
+                    <Text
+                      cursor="pointer"
+                      color="grey"
+                      fontSize=".9rem"
+                      onClick={() => removeForm(index)}
+                    >
+                      Remove
+                    </Text>
+                  </Flex>
+                  <CreateForm id={index} key={index} ref={formRef} />
                 </Box>
-                <Text color="grey" fontWeight="700">
-                  Link #{index + 1}
-                </Text>
-                <Spacer />
-                <Text
-                  cursor="pointer"
-                  color="grey"
-                  fontSize=".9rem"
-                  onClick={() => removeForm(index)}
-                >
-                  Remove
-                </Text>
-              </Flex>
-              <CreateForm id={index} key={index} ref={formRef} />
-            </Box>
-          </Box>
-        ))}
-      </VStack>
-      <Flex justify="flex-end">
-        <Button
-          width={["100%", "5rem"]}
-          bg="brand.500"
-          color="white"
-          size={["sm", "md"]}
-          type="submit"
-          mt="3rem"
-          _hover={{
-            bg: "brand.50",
-            color: "brand.500",
-            border: "1",
-            borderColor: "brand.500"
-          }}
-        >
-          Save
-        </Button>
-      </Flex>
+              </Box>
+            ))}
+          </VStack>
+          <Flex justify="flex-end">
+            <Button
+              width={["100%", "5rem"]}
+              bg="brand.500"
+              color="white"
+              size={["sm", "md"]}
+              type="submit"
+              mt="3rem"
+              _hover={{
+                bg: "brand.50",
+                color: "brand.500",
+                border: "1",
+                borderColor: "brand.500"
+              }}
+            >
+              Save
+            </Button>
+          </Flex>
+        </>
+      )}
     </Flex>
   );
 }

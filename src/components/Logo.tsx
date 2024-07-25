@@ -1,5 +1,7 @@
 import React from "react";
+
 import { Image, Show } from "@chakra-ui/react";
+
 function Logo() {
   return (
     <>

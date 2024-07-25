@@ -1,7 +1,12 @@
 "use client";
+
 import React from "react";
 
 import { useState, useRef, useEffect, ChangeEvent } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
 import {
   Box,
   Heading,
@@ -12,10 +17,13 @@ import {
   Input,
   VStack,
   FormControl,
+  FormErrorMessage,
   FormLabel
 } from "@chakra-ui/react";
+
 import { db } from "../../utils/firebase";
 import { ref, set, onValue } from "firebase/database";
+import { lstat } from "fs";
 
 interface ProfileData {
   imageSrc: string | null;
@@ -24,12 +32,36 @@ interface ProfileData {
   email: string;
 }
 
+const schema = yup.object().shape({
+  firstName: yup.string().required("Can't be empty"),
+  lastName: yup.string().required("Can't be empty"),
+  email: yup.string().email("Invalid email format").required("Can't be empty")
+});
+
+type LoginFormInputs = {
+  firstName: string;
+  lastName: string;
+  email: string;
+};
+
 function PanelTwo() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<LoginFormInputs>({
+    resolver: yupResolver(schema)
+  });
+
+  const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
+    // console.log(data);
+  };
 
   const handleBoxClick = () => {
     fileInputRef.current?.click();
@@ -65,25 +97,6 @@ function PanelTwo() {
         console.error("Failed to save data: ", error);
       });
   };
-
-  //   const handleSave = () => {
-  //     if (typeof window !== "undefined") {
-  //       const existingData: ProfileData[] = JSON.parse(
-  //         localStorage.getItem("profileData") || "[]"
-  //       );
-  //       const newItem: ProfileData = { imageSrc, firstName, lastName, email };
-  //       const isDuplicate = existingData.some(
-  //         (item: ProfileData) =>
-  //           item.firstName === newItem.firstName &&
-  //           item.lastName === newItem.lastName &&
-  //           item.email === newItem.email
-  //       );
-  //       if (!isDuplicate) {
-  //         const updatedData = [...existingData, newItem];
-  //         localStorage.setItem("profileData", JSON.stringify(updatedData));
-  //       }
-  //     }
-  //   };
 
   return (
     <Flex direction="column">
@@ -166,16 +179,19 @@ function PanelTwo() {
           <FormLabel fontSize={[".7rem", ".9rem"]} flexGrow={["0", "1"]}>
             First name
           </FormLabel>
-          <Input
-            flexBasis={["100%", "50%"]}
-            _placeholder={{ fontSize: [".7rem", ".9rem"] }}
-            bg="white"
-            name="firstName"
-            type="text"
-            placeholder="Ben"
-            onChange={(e) => setFirstName(e.target.value)}
-          />
+          <Box boxShadow="lg" width="100%" flexBasis={["100%", "50%"]}>
+            <Input
+              _placeholder={{ fontSize: [".7rem", ".9rem"] }}
+              focusBorderColor="brand.200"
+              bg="white"
+              name="firstName"
+              type="text"
+              placeholder="Ben"
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+          </Box>
         </FormControl>
+
         <FormControl
           display="flex"
           flexDir={["column", "row"]}
@@ -185,16 +201,19 @@ function PanelTwo() {
           <FormLabel fontSize={[".7rem", ".9rem"]} flexGrow={["0", "1"]}>
             Last name
           </FormLabel>
-          <Input
-            flexBasis={["100%", "50%"]}
-            _placeholder={{ fontSize: [".7rem", ".9rem"] }}
-            bg="white"
-            name="lastName"
-            type="text"
-            placeholder="Wright"
-            onChange={(e) => setLastName(e.target.value)}
-          />
+          <Box boxShadow="lg" width="100%" flexBasis={["100%", "50%"]}>
+            <Input
+              _placeholder={{ fontSize: [".7rem", ".9rem"] }}
+              focusBorderColor="brand.200"
+              bg="white"
+              name="lastName"
+              type="text"
+              placeholder="Wright"
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          </Box>
         </FormControl>
+
         <FormControl
           display="flex"
           flexDir={["column", "row"]}
@@ -203,17 +222,20 @@ function PanelTwo() {
           <FormLabel fontSize={[".7rem", ".9rem"]} flexGrow={["0", "1"]}>
             Email
           </FormLabel>
-          <Input
-            flexBasis={["100%", "50%"]}
-            _placeholder={{ fontSize: [".7rem", ".9rem"] }}
-            bg="white"
-            name="email"
-            type="email"
-            placeholder="ben@example.com"
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <Box boxShadow="lg" width="100%" flexBasis={["100%", "50%"]}>
+            <Input
+              _placeholder={{ fontSize: [".7rem", ".9rem"] }}
+              focusBorderColor="brand.200"
+              bg="white"
+              name="email"
+              type="email"
+              placeholder="ben@example.com"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Box>
         </FormControl>
       </VStack>
+
       <Flex justify="flex-end">
         <Button
           width={["100%", "5rem"]}

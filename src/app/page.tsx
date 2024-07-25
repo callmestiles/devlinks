@@ -8,6 +8,7 @@ import {
   Flex,
   Spacer,
   TabPanel,
+  Box,
   TabPanels
 } from "@chakra-ui/react";
 
@@ -31,25 +32,47 @@ function Home() {
           <Preview />
         </Flex>
 
-        <Flex mt="2rem">
-          <Flex
+        <Flex mt="2rem" width="100%" minH="80vh" bg="white">
+          <Box display={["none", "none", "flex"]} width="50%">
+            <Flex
+              justify="center"
+              position="fixed"
+              width="30%"
+              height="80vh"
+              bg="white"
+            >
+              <Image
+                src="/images/icon-phone.svg"
+                alt="icon-phone"
+                width="13rem"
+              />
+            </Flex>
+          </Box>
+          {/* <Flex
             flexGrow="1"
             display={["none", "none", "flex"]}
             justify="center"
             py="5rem"
+            position="fixed"
+            top="0"
           >
             <Image
               src="/images/icon-phone.svg"
               alt="icon-phone"
               width="13rem"
             />
-          </Flex>
-          <TabPanels flexBasis={["100%", "100%", "60%"]}>
-            <TabPanel>
+          </Flex> */}
+          <TabPanels
+            display="flex"
+            flexGrow="1"
+            alignSelf={["start", "start", "flex-end"]}
+            // bg="white"
+          >
+            <TabPanel width="100%">
               <PanelOne />
             </TabPanel>
 
-            <TabPanel>
+            <TabPanel width="100%">
               <PanelTwo />
             </TabPanel>
           </TabPanels>

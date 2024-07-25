@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Button,
   Container,
@@ -12,9 +13,9 @@ import {
   VStack,
   Avatar
 } from "@chakra-ui/react";
+
 import React from "react";
 import { css } from "@emotion/react";
-// import { db } from "../../utils/firebase";
 import { db } from "../../../utils/firebase";
 import { ref, onValue } from "firebase/database";
 import { useState, useEffect } from "react";
@@ -108,14 +109,14 @@ function Preview() {
             bg="white"
             boxShadow="lg"
           >
+            <Avatar
+              src="/images/icon-avatar-2.svg"
+              name="avatar"
+              size="xl"
+              mb="1rem"
+            />
             {profile && (
               <>
-                <Avatar
-                  src="/images/icon-avatar-2.svg"
-                  name={profile.firstName}
-                  size="xl"
-                  mb="1rem"
-                />
                 <Heading fontSize="1.5rem" mb=".2rem">
                   {profile.firstName} {profile.lastName}
                 </Heading>

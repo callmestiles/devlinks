@@ -1,4 +1,5 @@
 import React from "react";
+
 import { Box, Hide, Image, Text, Show, Link } from "@chakra-ui/react";
 
 function Preview() {

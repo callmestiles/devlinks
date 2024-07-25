@@ -1,5 +1,4 @@
 import React from "react";
-import { Flex, Image, Text, Spacer } from "@chakra-ui/react";
 
 function IconPhone() {
   return (
