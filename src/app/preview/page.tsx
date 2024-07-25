@@ -14,6 +14,10 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { css } from "@emotion/react";
+// import { db } from "../../utils/firebase";
+import { db } from "../../../utils/firebase";
+import { ref, onValue } from "firebase/database";
+import { useState, useEffect } from "react";
 
 interface Menu {
   src: string;
@@ -34,16 +38,26 @@ interface ProfileData {
 }
 
 function Preview() {
-  const profileItem = localStorage.getItem("profileData");
-  const profile: ProfileData[] | null = profileItem
-    ? JSON.parse(profileItem)
-    : null;
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [links, setLinks] = useState<LinkData[] | null>(null);
 
-  const linkItem = localStorage.getItem("links");
-  const links: LinkData[] | null = linkItem ? JSON.parse(linkItem) : null;
+  useEffect(() => {
+    const profileDataRef = ref(db, "profileData");
+    onValue(profileDataRef, (snapshot) => {
+      const data = snapshot.val();
+      setProfile(data);
+    });
+
+    const linksDataRef = ref(db, "links");
+    onValue(linksDataRef, (snapshot) => {
+      const data = snapshot.val();
+      setLinks(data);
+    });
+  }, []);
   return (
     <>
-      {console.log(links)}
+      {console.log(`links: ${links}`)}
+      {console.log(`profile: ${profile}`)}
       <Box
         display={["none", "block"]}
         css={css`
@@ -94,19 +108,19 @@ function Preview() {
             bg="white"
             boxShadow="lg"
           >
-            <Avatar
-              src="/images/icon-avatar-2.svg"
-              name="Profile picture"
-              size="xl"
-              mb="1rem"
-            />
-            {profile && profile.length > 0 && (
+            {profile && (
               <>
+                <Avatar
+                  src="/images/icon-avatar-2.svg"
+                  name={profile.firstName}
+                  size="xl"
+                  mb="1rem"
+                />
                 <Heading fontSize="1.5rem" mb=".2rem">
-                  {profile[0].firstName} {profile[0].lastName}
+                  {profile.firstName} {profile.lastName}
                 </Heading>
                 <Text fontSize=".8rem" color="grey" mb="2.5rem">
-                  {profile[0].email}
+                  {profile.email}
                 </Text>
               </>
             )}

@@ -19,6 +19,8 @@ import {
   MenuItem,
   Button
 } from "@chakra-ui/react";
+import { ref as dbRef, set, get, child } from "firebase/database";
+import { db } from "../../utils/firebase";
 import { menuList } from "../../menu-item";
 
 interface Menu {
@@ -54,35 +56,29 @@ const CreateForm = forwardRef<FormRef, CreateFormProps>((props, ref) => {
   };
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const links: LinkData[] = JSON.parse(
-        localStorage.getItem("links") || "[]"
-      );
-      if (links.length > 0) {
-        const lastLink = links[links.length - 1];
-        setSelectedMenu(lastLink.selectedMenu);
-        setInputValue(lastLink.inputValue);
+    const fetchData = async () => {
+      const dbRefs = dbRef(db); // Use the aliased `dbRef`
+      const snapshot = await get(child(dbRefs, `links/${id}`));
+      if (snapshot.exists()) {
+        const data = snapshot.val() as LinkData;
+        setSelectedMenu(data.selectedMenu);
+        setInputValue(data.inputValue);
       }
-    }
-  }, []);
+    };
+
+    fetchData();
+  }, [id]);
 
   const submit = () => {
-    if (typeof window !== "undefined") {
-      const links: LinkData[] = JSON.parse(
-        localStorage.getItem("links") || "[]"
-      );
-      const newItem: LinkData = { selectedMenu, inputValue };
-      const isDuplicate = links.some(
-        (item: LinkData) =>
-          JSON.stringify(item.selectedMenu) ===
-            JSON.stringify(newItem.selectedMenu) &&
-          item.inputValue === newItem.inputValue
-      );
-      if (!isDuplicate) {
-        links.push(newItem);
-        localStorage.setItem("links", JSON.stringify(links));
-      }
-    }
+    const newItem: LinkData = { selectedMenu, inputValue };
+
+    set(dbRef(db, `links/${id}`), newItem)
+      .then(() => {
+        console.log("Data saved successfully!");
+      })
+      .catch((error) => {
+        console.error("Error saving data: ", error);
+      });
   };
 
   useImperativeHandle(ref, () => ({

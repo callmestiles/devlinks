@@ -10,32 +10,50 @@ import {
   Spacer
 } from "@chakra-ui/react";
 import CreateForm from "./CreateForm";
+import { ref as dbRef, set, get, child, remove } from "firebase/database";
+import { db } from "../../utils/firebase";
 
 interface FormRef {
   submit: () => void;
 }
 
 function PanelOne() {
-  const initialFormCount = Number(localStorage.getItem("formCount") || 1);
-  const initialFormRefs: RefObject<FormRef>[] = Array.from(
-    { length: initialFormCount },
-    () => React.createRef<FormRef>()
-  );
-
-  const [formRefs, setFormRefs] =
-    useState<RefObject<FormRef>[]>(initialFormRefs);
+  const [formRefs, setFormRefs] = useState<RefObject<FormRef>[]>([]);
+  const [formCount, setFormCount] = useState<number>(0);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("formCount", formRefs.length.toString());
-    }
-  }, [formRefs.length]);
+    const fetchData = async () => {
+      const dbRefs = dbRef(db); // Use the aliased `dbRef`
+      const snapshot = await get(child(dbRefs, `formCount`));
+      if (snapshot.exists()) {
+        const count = snapshot.val() as number;
+        setFormCount(count);
+        const initialFormRefs: RefObject<FormRef>[] = Array.from(
+          { length: count },
+          () => React.createRef<FormRef>()
+        );
+        setFormRefs(initialFormRefs);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const addForm = () => {
+    const newFormCount = formCount + 1;
+    setFormCount(newFormCount);
     setFormRefs((prevFormRefs) => [
       ...prevFormRefs,
       React.createRef<FormRef>()
     ]);
+
+    set(dbRef(db, `formCount`), newFormCount)
+      .then(() => {
+        console.log("Form count updated successfully!");
+      })
+      .catch((error) => {
+        console.error("Error updating form count: ", error);
+      });
   };
 
   const removeForm = (index: number) => {
@@ -44,9 +62,26 @@ function PanelOne() {
       newFormRefs.splice(index, 1);
       return newFormRefs;
     });
-    const links = JSON.parse(localStorage.getItem("links") || "[]");
-    links.splice(index, 1);
-    localStorage.setItem("links", JSON.stringify(links));
+
+    setFormCount((prevCount) => {
+      const newCount = prevCount - 1;
+      set(dbRef(db, `formCount`), newCount)
+        .then(() => {
+          console.log("Form count updated successfully!");
+        })
+        .catch((error) => {
+          console.error("Error updating form count: ", error);
+        });
+      return newCount;
+    });
+
+    remove(dbRef(db, `links/${index}`))
+      .then(() => {
+        console.log("Form data removed successfully!");
+      })
+      .catch((error) => {
+        console.error("Error removing form data: ", error);
+      });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -113,12 +148,17 @@ function PanelOne() {
       <Flex justify="flex-end">
         <Button
           width={["100%", "5rem"]}
-          bg="brand.300"
+          bg="brand.500"
           color="white"
           size={["sm", "md"]}
           type="submit"
           mt="3rem"
-          _hover={{ bg: "brand.50" }}
+          _hover={{
+            bg: "brand.50",
+            color: "brand.500",
+            border: "1",
+            borderColor: "brand.500"
+          }}
         >
           Save
         </Button>

@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-import { useState, useRef, ChangeEvent } from "react";
+import { useState, useRef, useEffect, ChangeEvent } from "react";
 import {
   Box,
   Heading,
@@ -14,6 +14,8 @@ import {
   FormControl,
   FormLabel
 } from "@chakra-ui/react";
+import { db } from "../../utils/firebase";
+import { ref, set, onValue } from "firebase/database";
 
 interface ProfileData {
   imageSrc: string | null;
@@ -40,24 +42,48 @@ function PanelTwo() {
     }
   };
 
-  const handleSave = () => {
-    if (typeof window !== "undefined") {
-      const existingData: ProfileData[] = JSON.parse(
-        localStorage.getItem("profileData") || "[]"
-      );
-      const newItem: ProfileData = { imageSrc, firstName, lastName, email };
-      const isDuplicate = existingData.some(
-        (item: ProfileData) =>
-          item.firstName === newItem.firstName &&
-          item.lastName === newItem.lastName &&
-          item.email === newItem.email
-      );
-      if (!isDuplicate) {
-        const updatedData = [...existingData, newItem];
-        localStorage.setItem("profileData", JSON.stringify(updatedData));
+  useEffect(() => {
+    const profileDataRef = ref(db, "profileData");
+    onValue(profileDataRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setImageSrc(data.imageSrc);
+        setFirstName(data.firstName);
+        setLastName(data.lastName);
+        setEmail(data.email);
       }
-    }
+    });
+  }, []);
+
+  const handleSave = () => {
+    const newItem: ProfileData = { imageSrc, firstName, lastName, email };
+    set(ref(db, "profileData"), newItem)
+      .then(() => {
+        console.log("Data saved successfully.");
+      })
+      .catch((error) => {
+        console.error("Failed to save data: ", error);
+      });
   };
+
+  //   const handleSave = () => {
+  //     if (typeof window !== "undefined") {
+  //       const existingData: ProfileData[] = JSON.parse(
+  //         localStorage.getItem("profileData") || "[]"
+  //       );
+  //       const newItem: ProfileData = { imageSrc, firstName, lastName, email };
+  //       const isDuplicate = existingData.some(
+  //         (item: ProfileData) =>
+  //           item.firstName === newItem.firstName &&
+  //           item.lastName === newItem.lastName &&
+  //           item.email === newItem.email
+  //       );
+  //       if (!isDuplicate) {
+  //         const updatedData = [...existingData, newItem];
+  //         localStorage.setItem("profileData", JSON.stringify(updatedData));
+  //       }
+  //     }
+  //   };
 
   return (
     <Flex direction="column">

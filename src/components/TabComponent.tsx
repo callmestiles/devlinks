@@ -11,6 +11,7 @@ function TabComponent() {
         py=".5rem"
         color="grey"
         _selected={{ bg: "brand.50", color: "brand.500" }}
+        _hover={{ color: "brand.500" }}
       >
         <IconLink fill="currentColor" />
         <Show above="sm">
@@ -24,6 +25,7 @@ function TabComponent() {
         py=".5rem"
         color="grey"
         _selected={{ bg: "brand.50", color: "brand.500" }}
+        _hover={{ color: "brand.500" }}
       >
         <IconAvatar fill="currentColor" />
         <Show above="sm">
