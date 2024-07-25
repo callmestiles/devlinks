@@ -10,6 +10,7 @@ import {
   FormControl,
   Box,
   Menu,
+  Text,
   Input,
   FormLabel,
   MenuButton,
@@ -24,6 +25,8 @@ import {
 import { ref as dbRef, set, get, child } from "firebase/database";
 import { db } from "../../utils/firebase";
 import { menuList } from "../../menu-item";
+import { useToast } from "@chakra-ui/react";
+import ToastComponent from "./ToastComponent";
 
 interface Menu {
   src: string;
@@ -45,6 +48,7 @@ interface CreateFormProps {
 }
 
 const CreateForm = forwardRef<FormRef, CreateFormProps>((props, ref) => {
+  const toast = useToast();
   const { id } = props;
   const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null);
   const [inputValue, setInputValue] = useState("");
@@ -76,6 +80,10 @@ const CreateForm = forwardRef<FormRef, CreateFormProps>((props, ref) => {
 
     set(dbRef(db, `links/${id}`), newItem)
       .then(() => {
+        toast({
+          position: "bottom",
+          render: () => <ToastComponent />
+        });
         console.log("Data saved successfully!");
       })
       .catch((error) => {

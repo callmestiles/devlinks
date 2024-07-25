@@ -46,7 +46,7 @@ function Login() {
 
   const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
     // console.log(data);
-    router.push("/");
+    router.push("/home");
   };
 
   return (

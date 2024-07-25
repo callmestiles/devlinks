@@ -1,85 +1,156 @@
-import React from "react";
-import "./globals.css";
+// import ButtonComponent from "@/components/ButtonComponent";
+"use client";
+
+import { useForm, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import FormButtonComponent from "@/components/FormButtonComponent";
+import InputGroupComponent from "@/components/InputGroup";
 import {
   Container,
-  Image,
-  Tabs,
-  TabList,
   Flex,
-  Spacer,
-  TabPanel,
+  Heading,
+  Image,
   Box,
-  TabPanels
+  FormLabel,
+  VStack,
+  FormControl,
+  FormHelperText,
+  Text,
+  FormErrorMessage,
+  Link
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 
-import TabComponent from "@/components/TabComponent";
-import Logo from "@/components/Logo";
-import Preview from "@/components/Preview";
-import PanelOne from "@/components/PanelOne";
-import PanelTwo from "@/components/PanelTwo";
+const schema = yup.object().shape({
+  email: yup.string().email("Invalid email format").required("Can't be empty"),
+  password: yup
+    .string()
+    .min(8, "Passowrd must contain at least 8 characters")
+    .required("Please check again"),
+  confirm_password: yup
+    .string()
+    .oneOf([yup.ref("password"), undefined], "Passwords must match")
+    .required("Please check again")
+});
 
-function Home() {
+type LoginFormInputs = {
+  email: string;
+  password: string;
+  confirm_password: string;
+};
+
+function Register() {
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<LoginFormInputs>({
+    resolver: yupResolver(schema)
+  });
+
+  const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
+    // console.log(data);
+    router.push("/home");
+  };
+
   return (
-    <Container maxW="97%" py={["1rem", "2.5rem"]} pb={["0", "0", "0"]}>
-      <Tabs variant="soft-rounded" colorScheme="brand">
-        <Flex align="center">
-          <Logo />
-          <Spacer />
-          <TabList>
-            <TabComponent />
-          </TabList>
-          <Spacer />
-          <Preview />
-        </Flex>
-
-        <Flex mt="2rem" width="100%" minH="80vh" bg="white">
-          <Box display={["none", "none", "flex"]} width="50%">
-            <Flex
-              justify="center"
-              position="fixed"
-              width="30%"
-              height="80vh"
-              bg="white"
-            >
-              <Image
-                src="/images/icon-phone.svg"
-                alt="icon-phone"
-                width="13rem"
-              />
-            </Flex>
-          </Box>
-          {/* <Flex
-            flexGrow="1"
-            display={["none", "none", "flex"]}
-            justify="center"
-            py="5rem"
-            position="fixed"
-            top="0"
-          >
-            <Image
-              src="/images/icon-phone.svg"
-              alt="icon-phone"
-              width="13rem"
+    <Container
+      maxWidth="100%"
+      minH="100vh"
+      display="flex"
+      flexDir="column"
+      alignItems={["start", "center"]}
+      justifyContent={["start", "center"]}
+      bg="#FAFAFA"
+    >
+      <Flex
+        align="center"
+        justify={["start", "center"]}
+        mt="1.5rem"
+        mb="2.5rem"
+      >
+        <Image src="/images/icon-logo.svg" alt="Logo" mr=".5rem" />
+        <Image src="/images/icon-logo-text.svg" alt="devlinks" width="6rem" />
+      </Flex>
+      <Box bg="white" width="35rem" p="2.5rem">
+        <Box>
+          <Heading fontSize={["1.3rem", "1.5rem"]} mb=".5rem">
+            Create Account
+          </Heading>
+          <Text color="grey" fontSize={[".8rem", "1rem"]}>
+            Lets get you started creating your links!
+          </Text>
+        </Box>
+        <VStack
+          mt="2.5rem"
+          spacing="1rem"
+          as="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <FormControl isRequired isInvalid={!!errors.email}>
+            <FormLabel fontSize={[".7rem", ".8rem"]}>Email address</FormLabel>
+            <InputGroupComponent
+              inputtype="email"
+              src="/images/icon-mail.svg"
+              placeholder="e.g. alex@email.com"
+              {...register("email")}
             />
-          </Flex> */}
-          <TabPanels
-            display="flex"
-            flexGrow="1"
-            alignSelf={["start", "start", "flex-end"]}
-            // bg="white"
-          >
-            <TabPanel width="100%">
-              <PanelOne />
-            </TabPanel>
-
-            <TabPanel width="100%">
-              <PanelTwo />
-            </TabPanel>
-          </TabPanels>
+            <FormErrorMessage>
+              {errors.email && errors.email.message}
+            </FormErrorMessage>
+          </FormControl>
+          <FormControl isRequired isInvalid={!!errors.password}>
+            <FormLabel fontSize={[".7rem", ".8rem"]}>Create password</FormLabel>
+            <InputGroupComponent
+              inputtype="password"
+              src="/images/icon-lock.svg"
+              placeholder="At least 8 characters"
+              {...register("password")}
+            />
+            <FormErrorMessage>
+              {errors.password && errors.password.message}
+            </FormErrorMessage>
+          </FormControl>
+          <FormControl isRequired isInvalid={!!errors.confirm_password}>
+            <FormLabel fontSize={[".7rem", ".8rem"]}>
+              Confirm password
+            </FormLabel>
+            <InputGroupComponent
+              inputtype="password"
+              src="/images/icon-lock.svg"
+              placeholder="At least 8 characters"
+              {...register("confirm_password")}
+            />
+            <FormErrorMessage>
+              {errors.confirm_password && errors.confirm_password.message}
+            </FormErrorMessage>
+            <FormHelperText fontSize=".6rem" color="grey">
+              Password must contain at least 8 characters
+            </FormHelperText>
+          </FormControl>
+          <FormButtonComponent content="Create new account" />
+        </VStack>
+        <Flex
+          m="1.5rem"
+          justify="center"
+          align="center"
+          flexDir={["column", "row"]}
+        >
+          <Text fontSize=".8rem" color="grey" mr={["0", ".5rem"]}>
+            Already have an account?
+          </Text>
+          <Link href="/login">
+            <Text fontSize=".8rem" color="brand.500">
+              Login
+            </Text>
+          </Link>
         </Flex>
-      </Tabs>
+      </Box>
     </Container>
   );
 }
 
-export default Home;
+export default Register;

@@ -17,12 +17,13 @@ import {
   Input,
   VStack,
   FormControl,
-  FormErrorMessage,
   FormLabel
 } from "@chakra-ui/react";
 
 import { db } from "../../utils/firebase";
 import { ref, set, onValue } from "firebase/database";
+import { useToast } from "@chakra-ui/react";
+import ToastComponent from "./ToastComponent";
 import { lstat } from "fs";
 
 interface ProfileData {
@@ -45,6 +46,7 @@ type LoginFormInputs = {
 };
 
 function PanelTwo() {
+  const toast = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [firstName, setFirstName] = useState<string>("");
@@ -91,7 +93,10 @@ function PanelTwo() {
     const newItem: ProfileData = { imageSrc, firstName, lastName, email };
     set(ref(db, "profileData"), newItem)
       .then(() => {
-        console.log("Data saved successfully.");
+        toast({
+            position: "bottom",
+            render: () => <ToastComponent />
+          });
       })
       .catch((error) => {
         console.error("Failed to save data: ", error);
